@@ -370,6 +370,82 @@ namespace SportsLeague.DataAccess.Context
 
             });
 
+            // ── Goal Configuration ── 
+
+            modelBuilder.Entity<Goal>(entity =>
+
+            {
+
+                entity.HasKey(g => g.Id);
+
+                entity.Property(g => g.Minute).IsRequired();
+
+                entity.Property(g => g.Type).IsRequired();
+
+                entity.Property(g => g.CreatedAt).IsRequired();
+
+                entity.Property(g => g.UpdatedAt).IsRequired(false);
+
+
+
+                entity.HasOne(g => g.Match)
+
+                      .WithMany(m => m.Goals)
+
+                      .HasForeignKey(g => g.MatchId)
+
+                      .OnDelete(DeleteBehavior.Cascade);
+
+
+
+                entity.HasOne(g => g.Player)
+
+                      .WithMany(p => p.Goals)
+
+                      .HasForeignKey(g => g.PlayerId)
+
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
+            // ── Card Configuration ── 
+
+            modelBuilder.Entity<Card>(entity =>
+
+            {
+
+                entity.HasKey(c => c.Id);
+
+                entity.Property(c => c.Minute).IsRequired();
+
+                entity.Property(c => c.Type).IsRequired();
+
+                entity.Property(c => c.CreatedAt).IsRequired();
+
+                entity.Property(c => c.UpdatedAt).IsRequired(false);
+
+
+
+                entity.HasOne(c => c.Match)
+
+                      .WithMany(m => m.Cards)
+
+                      .HasForeignKey(c => c.MatchId)
+
+                      .OnDelete(DeleteBehavior.Cascade);
+
+
+
+                entity.HasOne(c => c.Player)
+
+                      .WithMany(p => p.Cards)
+
+                      .HasForeignKey(c => c.PlayerId)
+
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
         }
 
     }
