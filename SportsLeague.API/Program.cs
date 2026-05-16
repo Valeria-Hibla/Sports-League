@@ -5,6 +5,7 @@ using SportsLeague.Domain.Helpers;
 using SportsLeague.Domain.Interfaces.Repositories;
 using SportsLeague.Domain.Interfaces.Services;
 using SportsLeague.Domain.Services;
+using SportsLeague.DataAccess.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider
+        .GetRequiredService<LeagueDbContext>();
+    await context.Database.MigrateAsync(); // Crea la BD + aplica migraciones 
+    await DataSeeder.SeedAsync(context);
 }
 
 app.MapGet("/", () => Results.Redirect("/swagger"));
