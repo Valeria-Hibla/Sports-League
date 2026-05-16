@@ -18,4 +18,6 @@ public class Match : AuditBase
     public ICollection<Goal> Goals { get; set; } = new List<Goal>();
 
     public ICollection<Card> Cards { get; set; } = new List<Card>();
+
+    public ICollection<MatchLineup> Lineups { get; set; } = new List<MatchLineup>();
 }
