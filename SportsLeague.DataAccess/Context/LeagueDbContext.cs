@@ -22,6 +22,7 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<Goal> Goals => Set<Goal>();
         public DbSet<Card> Cards => Set<Card>();
         public DbSet<Match> Matches => Set<Match>();
+        public DbSet<MatchLineup> MatchLineups => Set<MatchLineup>(); // ← Evento #4
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -444,6 +445,42 @@ namespace SportsLeague.DataAccess.Context
 
                       .OnDelete(DeleteBehavior.Restrict);
 
+            });
+
+
+            modelBuilder.Entity<MatchLineup>(entity =>
+            {
+                entity.HasKey(ml => ml.Id);
+
+                entity.Property(ml => ml.Position)
+                      .IsRequired()
+                      .HasMaxLength(10);
+
+                entity.Property(ml => ml.IsStarter)
+                      .IsRequired();
+
+                entity.Property(ml => ml.CreatedAt)
+                      .IsRequired();
+
+                entity.Property(ml => ml.UpdatedAt)
+                      .IsRequired(false);
+
+                // FK → Match (Cascade: eliminar partido elimina su alineación)
+                entity.HasOne(ml => ml.Match)
+                      .WithMany(m => m.Lineups)
+                      .HasForeignKey(ml => ml.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // FK → Player (Restrict: no eliminar jugador con alineaciones)
+                entity.HasOne(ml => ml.Player)
+                      .WithMany(p => p.Lineups)
+                      .HasForeignKey(ml => ml.PlayerId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // Índice único compuesto: mismo patrón que TournamentTeam (Fase 3)
+                // Garantiza que un jugador no aparezca dos veces en el mismo partido
+                entity.HasIndex(ml => new { ml.MatchId, ml.PlayerId })
+                      .IsUnique();
             });
 
         }
